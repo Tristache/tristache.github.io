@@ -1,0 +1,14 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ramio",
+      "sha256_cert_fingerprints": [
+        "54:17:C0:68:7C:31:7C:A3:E6:59:5C:96:52:F4:4E:00:70:2C:2C:D4:78:33:D5:9E:2E:8B:36:A1:7D:94:84:03",
+        "B3:58:AB:9D:D5:78:1B:8A:6D:0B:F0:C3:91:08:2D:94:C8:31:59:6F:17:5F:ED:DF:D3:B1:A0:0F:29:63:2A:63",
+        "FF:E7:8B:C4:48:96:E9:1F:82:DD:9F:49:34:54:FA:3B:6D:8E:AA:BA:1B:BD:5B:84:86:DE:B2:05:2F:B1:85:A2"
+      ]
+    }
+  }
+]
