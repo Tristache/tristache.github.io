@@ -52,13 +52,13 @@
 <body>
   <div class="carte">
     <h1 id="titre">Invitation à une partie de Ramio</h1>
-    <p>Ton code d'accès :</p>
+    <p id="code-intro">Ton code d'accès :</p>
     <div class="code" id="code">------</div>
     <a class="bouton" id="ouvrir" href="#">Ouvrir dans l'app Ramio</a>
     <a class="bouton secondaire" href="https://play.google.com/store/apps/details?id=com.ramio">
       Installer Ramio sur Google Play
     </a>
-    <p class="note">
+    <p class="note" id="note">
       Si l'app est installée, le lien de l'invitation l'ouvre directement.
       Sinon, installe Ramio puis saisis le code ci-dessus dans
       « Salon privé &gt; Rejoindre » (ou « Défis &gt; Rejoindre » pour une
@@ -74,6 +74,20 @@
     if (course) {
       document.getElementById("titre").textContent =
         "Invitation à une course de défis Ramio";
+    }
+    // Lien « Bats mon temps » (défi d'un ami) : pas de code à recopier,
+    // le lien seul lance le défi dans l'app.
+    if (params.get("defi")) {
+      document.getElementById("titre").textContent =
+        "Défi « Bats mon temps » Ramio";
+      document.getElementById("code-intro").style.display = "none";
+      document.getElementById("code").style.display = "none";
+      document.getElementById("note").textContent =
+        "Si tu as reçu un défi, ouvre ce lien sur ton téléphone avec " +
+        "Ramio installé : le défi se lance directement, avec le temps " +
+        "de ton ami à battre. Sinon, installe Ramio puis rouvre le lien. " +
+        "Pendant la bêta, l'accès Google Play passe par le lien " +
+        "d'invitation des testeurs.";
     }
     // Force l'ouverture dans l'app sur Android quand la page s'est
     // ouverte dans le navigateur malgré l'app installée.
