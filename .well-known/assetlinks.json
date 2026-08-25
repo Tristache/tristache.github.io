@@ -1,6 +1,8 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "com.ramio",
@@ -12,11 +14,14 @@
     }
   },
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "com.meldfall",
       "sha256_cert_fingerprints": [
+        "E6:84:DE:D5:38:94:03:D2:2D:50:D6:7C:66:9F:45:87:69:E3:D9:9B:0B:B6:99:A7:39:FB:AD:20:E5:FA:19:05",
         "12:53:2E:9D:CB:1C:8E:C7:DA:62:99:E5:1D:D7:58:73:B6:18:77:BE:22:7F:42:7D:99:82:E8:08:8D:BF:B1:2B"
       ]
     }

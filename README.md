@@ -5,9 +5,8 @@ applications **Ramio (Rami Chinois)** et **Meldfall** :
 
 - `.well-known/assetlinks.json` — vérification des liens profonds
   Android (App Links) : empreintes de la clé de signature Google Play,
-  de la clé d'upload et de la clé de débogage pour `com.ramio` ; clé
-  d'upload pour `com.meldfall` (la clé Play App Signing de Meldfall
-  reste à ajouter dès qu'elle est lue dans la Play Console) ;
+  de la clé d'upload et de la clé de débogage pour `com.ramio` ; clés
+  Play App Signing et d'upload pour `com.meldfall` ;
 - `.well-known/apple-app-site-association` — équivalent iOS
   (Universal Links, Team 3SL5ZC838T) : `/rejoindre*` pour Ramio,
   `/meldfall*` pour Meldfall ;
