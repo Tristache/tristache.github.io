@@ -10,5 +10,15 @@
         "FF:E7:8B:C4:48:96:E9:1F:82:DD:9F:49:34:54:FA:3B:6D:8E:AA:BA:1B:BD:5B:84:86:DE:B2:05:2F:B1:85:A2"
       ]
     }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.meldfall",
+      "sha256_cert_fingerprints": [
+        "12:53:2E:9D:CB:1C:8E:C7:DA:62:99:E5:1D:D7:58:73:B6:18:77:BE:22:7F:42:7D:99:82:E8:08:8D:BF:B1:2B"
+      ]
+    }
   }
 ]

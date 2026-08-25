@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meldfall</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #241333;
+      color: #fff;
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .carte {
+      background: #152A26;
+      color: #fff;
+      border-radius: 16px;
+      padding: 32px 24px;
+      max-width: 420px;
+      margin: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+    h1 { color: #7BE3B7; font-size: 1.5em; margin-top: 0; }
+    .code {
+      font-size: 2em;
+      letter-spacing: 0.2em;
+      font-weight: bold;
+      background: #10221C;
+      color: #FFC93C;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 16px 0;
+    }
+    a.bouton {
+      display: block;
+      background: #7BE3B7;
+      color: #10221C;
+      text-decoration: none;
+      border-radius: 8px;
+      padding: 14px;
+      margin: 8px 0;
+      font-weight: bold;
+    }
+    a.secondaire { background: #3A2A4F; color: #fff; }
+    .note { font-size: 0.85em; color: #9fb3aa; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="carte">
+    <h1 id="titre">Meldfall</h1>
+    <p id="intro">Un ami t'invite à jouer.</p>
+    <div class="code" id="code" style="display:none">------</div>
+    <a class="bouton" id="ouvrir" href="#">Ouvrir dans Meldfall</a>
+    <a class="bouton secondaire" href="https://play.google.com/store/apps/details?id=com.meldfall">
+      Installer Meldfall sur Google Play
+    </a>
+    <p class="note" id="note">
+      Si l'app est installée, ce lien l'ouvre directement. Sinon,
+      installe Meldfall puis rouvre le lien. Pendant la bêta, l'accès
+      passe par le lien d'invitation des testeurs (Google Play ou
+      TestFlight).
+    </p>
+  </div>
+  <script>
+    var params = new URLSearchParams(location.search);
+    var titre = document.getElementById("titre");
+    var intro = document.getElementById("intro");
+    var salon = (params.get("salon") || "").toUpperCase();
+    var de = params.get("de") || "";
+    if (salon) {
+      titre.textContent = "Salon privé Meldfall";
+      intro.textContent = "Ton code d'accès :";
+      var code = document.getElementById("code");
+      code.textContent = salon;
+      code.style.display = "block";
+      document.getElementById("note").textContent =
+        "Si l'app est installée, le lien ouvre le salon directement. " +
+        "Sinon, installe Meldfall puis saisis le code dans " +
+        "« En direct > Salon privé > Rejoindre ».";
+    } else if (params.get("graine")) {
+      titre.textContent = "Bats mon fantôme";
+      intro.textContent = (de ? de + " te défie" : "Un ami te défie") +
+        " sur sa donne : mêmes cartes, son fantôme en face.";
+    } else if (params.has("jour")) {
+      titre.textContent = "Défi du jour Meldfall";
+      intro.textContent = "Même sabot pour tout le monde — à toi de jouer.";
+    }
+    // Force l'ouverture dans l'app sur Android quand la page s'est
+    // ouverte dans le navigateur malgré l'app installée.
+    document.getElementById("ouvrir").href =
+      "intent://tristache.github.io/meldfall" + location.search +
+      "#Intent;scheme=https;package=com.meldfall;end";
+  </script>
+</body>
+</html>
