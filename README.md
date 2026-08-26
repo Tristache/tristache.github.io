@@ -13,6 +13,8 @@ applications **Ramio (Rami Chinois)** et **Meldfall** :
 - `rejoindre.html` — page de repli des invitations Ramio
   (`https://tristache.github.io/rejoindre?code=XXXXXX`) quand l'app
   n'est pas installée ;
+- `meldfall-version.json` — dernier build Meldfall publié (avertissement de
+  mise à jour dans l'app) ;
 - `meldfall.html` — page de repli des liens Meldfall
   (`/meldfall?jour=...`, `?graine=...`, `?salon=...`) ;
 - `index.html` — redirection vers le site
