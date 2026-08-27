@@ -1,6 +1,6 @@
 {
   "_doc": "Dernier build publié de l'app Meldfall (app/lib/cascade/meldfall_update.dart). À mettre à jour à CHAQUE build Meldfall disponible chez les testeurs : latestBuild = meldfallVersionCode de app/android/app/build.gradle.kts (= MELDFALL_BUILD_NUMBER du workflow Codemagic). La clé ios porte itms-beta:// (TestFlight) jusqu'à la fiche App Store.",
-  "latestBuild": 3,
+  "latestBuild": 4,
   "android": "https://play.google.com/store/apps/details?id=com.meldfall",
   "ios": "itms-beta://"
 }
