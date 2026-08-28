@@ -74,7 +74,28 @@
     var intro = document.getElementById("intro");
     var salon = (params.get("salon") || "").toUpperCase();
     var de = params.get("de") || "";
-    if (salon) {
+    // Retour d'un e-mail d'authentification Supabase (confirmation
+    // d'adresse) : ?code= (PKCE) ou #access_token= / type= (implicite).
+    // Sur un téléphone où l'app est installée, ce lien ouvre l'app
+    // directement et elle lit la session ; ici, on rassure seulement.
+    var hash = new URLSearchParams(location.hash.replace(/^#/, ""));
+    var authErr = params.get("error_description") || hash.get("error_description");
+    var authOk = params.has("code") || hash.has("access_token") ||
+      params.has("type") || hash.has("type");
+    if (authErr) {
+      titre.textContent = "Lien expiré";
+      intro.textContent = "Ce lien de confirmation n'est plus valable (" +
+        authErr + "). Refais la demande depuis Réglages > Compte.";
+      document.getElementById("ouvrir").style.display = "none";
+      document.getElementById("note").textContent = "";
+    } else if (authOk) {
+      titre.textContent = "Adresse confirmée";
+      intro.textContent = "Ton compte Meldfall est prêt : reviens dans " +
+        "l'app, elle te reconnaît.";
+      document.getElementById("note").textContent =
+        "Si tu as ouvert ce lien sur un autre appareil, ouvre simplement " +
+        "Meldfall sur ton téléphone.";
+    } else if (salon) {
       titre.textContent = "Salon privé Meldfall";
       intro.textContent = "Ton code d'accès :";
       var code = document.getElementById("code");
