@@ -3,6 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bannière Apple : « Ouvrir » si Ramio est installé (app 6788317282),
+       avec le lien courant transmis à l'app. -->
+  <meta name="apple-itunes-app" id="smart-banner" content="app-id=6788317282">
   <title>Rejoindre une partie - Ramio</title>
   <style>
     body {
@@ -176,9 +179,26 @@
       encodeURIComponent(utm);
 
     // Force l'ouverture dans l'app sur Android quand la page s'est
-    // ouverte dans le navigateur malgré l'app installée.
-    el("ouvrir").href = "intent://tristache.github.io/rejoindre" + location.search +
-      "#Intent;scheme=https;package=com.ramio;end";
+    // ouverte dans le navigateur malgré l'app installée. Sur iPhone,
+    // Safari ne connaît pas intent:// (« adresse non valide », retour
+    // Tristan 05/09) et rien ne peut forcer un lien universel depuis la
+    // page elle-même : le bouton disparaît, la note dit le bon geste, et
+    // la bannière Apple propose « Ouvrir » si l'app est installée.
+    var ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (ios) {
+      el("ouvrir").style.display = "none";
+      el("note").textContent = (lang === "fr"
+        ? "Sur iPhone, ce lien s'ouvre directement dans Ramio quand tu le touches depuis Messages, WhatsApp ou Mail, une fois l'app installée. "
+        : "On iPhone, this link opens straight in Ramio when you tap it from Messages, WhatsApp or Mail, once the app is installed. ")
+        + el("note").textContent;
+      try {
+        el("smart-banner").setAttribute("content",
+          "app-id=6788317282, app-argument=" + location.href);
+      } catch (e) {}
+    } else {
+      el("ouvrir").href = "intent://tristache.github.io/rejoindre" + location.search +
+        "#Intent;scheme=https;package=com.ramio;end";
+    }
 
     // Mesure (même RPC que le site : migration 74) : visite + clics stores.
     var log = function (kind) {
