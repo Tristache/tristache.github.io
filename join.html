@@ -128,72 +128,239 @@
     var ami = clean(params.get("ami"), 36);
     var de = (params.get("de") || "").slice(0, 20);
     var src = clean(params.get("src"), 40);
-    var lang = params.get("lang") ||
-      ((navigator.language || "fr").toLowerCase().indexOf("fr") === 0 ? "fr" : "en");
-    if (lang !== "fr") lang = "en";
-    document.documentElement.lang = lang;
+
 
     var cas = ami ? "ami" : defi ? (temps ? "beat" : "puzzle") :
       type === "course" ? "course" : type === "differe" ? "differe" : "salon";
 
-    var T = {
-      fr: {
-        salon: "Invitation à une partie de Ramio",
-        course: "Invitation à un duel de défis Ramio",
-        differe: "Invitation à une partie de Ramio en différé",
-        beat: "Défi « Bats mon temps » Ramio",
-        puzzle: "Un défi Ramio à résoudre",
-        ami: de ? de + " t'invite à jouer à Ramio" : "Invitation à jouer à Ramio",
-        codeIntro: "Ton code d'accès :",
-        ouvrir: "Ouvrir dans l'app Ramio",
-        play: "Installer Ramio sur Google Play",
-        ios: "iPhone : rejoindre la bêta TestFlight",
-        noteSalon: "Si l'app est installée, ce lien l'ouvre directement. Sinon, " +
-          "installe Ramio puis saisis le code ci-dessus dans « Salon privé › " +
-          "Rejoindre » (ou « Défis › Rejoindre » pour un duel).",
-        noteBeat: "Ouvre ce lien sur ton téléphone avec Ramio installé : le défi " +
-          "se lance directement, avec le temps de ton ami à battre. Sinon, " +
-          "installe Ramio puis rouvre le lien.",
-        notePuzzle: "Ouvre ce lien sur ton téléphone avec Ramio installé : le " +
-          "défi se lance directement. Sinon, installe Ramio puis rouvre le lien. " +
-          "Tu peux réorganiser toute la table ; le but est de poser toutes " +
-          "les cartes de ta main.",
-        noteAmi: "Installe Ramio par ce lien et crée ton compte : tu reçois " +
-          "300 jetons (offre de la bêta). Sur Android, l'app te reconnaît " +
-          "après l'installation ; sur iPhone, rouvre ce lien une fois l'app " +
-          "installée.",
-        beta: "Ramio est en bêta ouverte : le jeu est gratuit, on peut y jouer " +
-          "sans compte, et tout ce qui se débloque reste acquis."
+    var L = {
+      "fr": {
+        "salon": "Invitation à une partie de Ramio",
+        "course": "Invitation à un duel de défis Ramio",
+        "differe": "Invitation à une partie de Ramio en différé",
+        "beat": "Défi « Bats mon temps » Ramio",
+        "puzzle": "Un défi Ramio à résoudre",
+        "amiDe": "{de} t'invite à jouer à Ramio",
+        "ami": "Invitation à jouer à Ramio",
+        "codeIntro": "Ton code d'accès :",
+        "ouvrir": "Ouvrir dans l'app Ramio",
+        "play": "Installer Ramio sur Google Play",
+        "ios": "iPhone : rejoindre la bêta TestFlight",
+        "noteSalon": "Si l'app est installée, ce lien l'ouvre directement. Sinon, installe Ramio puis saisis le code ci-dessus dans « Salon privé › Rejoindre » (ou « Défis › Rejoindre » pour un duel).",
+        "noteBeat": "Ouvre ce lien sur ton téléphone avec Ramio installé : le défi se lance directement, avec le temps de ton ami à battre. Sinon, installe Ramio puis rouvre le lien.",
+        "notePuzzle": "Ouvre ce lien sur ton téléphone avec Ramio installé : le défi se lance directement. Sinon, installe Ramio puis rouvre le lien. Tu peux réorganiser toute la table ; le but est de poser toutes les cartes de ta main.",
+        "noteAmi": "Installe Ramio par ce lien et crée ton compte : tu reçois 300 jetons (offre de la bêta). Sur Android, l'app te reconnaît après l'installation ; sur iPhone, rouvre ce lien une fois l'app installée.",
+        "noteIos": "Sur iPhone, ce lien s'ouvre directement dans Ramio quand tu le touches depuis Messages, WhatsApp ou Mail, une fois l'app installée. ",
+        "beta": "Ramio est en bêta ouverte : le jeu est gratuit, on peut y jouer sans compte, et tout ce qui se débloque reste acquis.",
+        "legal": "Mentions légales"
       },
-      en: {
-        salon: "You're invited to a Ramio game",
-        course: "You're invited to a Ramio puzzle duel",
-        differe: "You're invited to a Ramio correspondence game",
-        beat: "Ramio challenge: beat my time",
-        puzzle: "A Ramio puzzle to solve",
-        ami: de ? de + " invites you to play Ramio" : "You're invited to play Ramio",
-        codeIntro: "Your room code:",
-        ouvrir: "Open in the Ramio app",
-        play: "Get Ramio on Google Play",
-        ios: "iPhone: join the TestFlight beta",
-        noteSalon: "If the app is installed, this link opens it directly. " +
-          "Otherwise install Ramio, then enter the code above in " +
-          "“Private room › Join” (or “Puzzles › Join” for a duel).",
-        noteBeat: "Open this link on your phone with Ramio installed: the " +
-          "puzzle starts right away, with your friend's time to beat. " +
-          "Otherwise install Ramio, then open the link again.",
-        notePuzzle: "Open this link on your phone with Ramio installed: the " +
-          "puzzle starts right away. Otherwise install Ramio, then open the " +
-          "link again. You may rearrange the whole table; the goal is to " +
-          "play every card from your hand.",
-        noteAmi: "Install Ramio through this link and create your account: " +
-          "you get 300 tokens (beta offer). On Android the app recognises " +
-          "you after installing; on iPhone, open this link again once the " +
-          "app is installed.",
-        beta: "Ramio is in open beta: the game is free, you can play without " +
-          "an account, and everything you unlock stays yours."
+      "en": {
+        "salon": "You're invited to a Ramio game",
+        "course": "You're invited to a Ramio puzzle duel",
+        "differe": "You're invited to a Ramio correspondence game",
+        "beat": "Ramio challenge: beat my time",
+        "puzzle": "A Ramio puzzle to solve",
+        "amiDe": "{de} invites you to play Ramio",
+        "ami": "You're invited to play Ramio",
+        "codeIntro": "Your room code:",
+        "ouvrir": "Open in the Ramio app",
+        "play": "Get Ramio on Google Play",
+        "ios": "iPhone: join the TestFlight beta",
+        "noteSalon": "If the app is installed, this link opens it directly. Otherwise install Ramio, then enter the code above in “Private room › Join” (or “Puzzles › Join” for a duel).",
+        "noteBeat": "Open this link on your phone with Ramio installed: the puzzle starts right away, with your friend's time to beat. Otherwise install Ramio, then open the link again.",
+        "notePuzzle": "Open this link on your phone with Ramio installed: the puzzle starts right away. Otherwise install Ramio, then open the link again. You may rearrange the whole table; the goal is to play every card from your hand.",
+        "noteAmi": "Install Ramio through this link and create your account: you get 300 tokens (beta offer). On Android the app recognises you after installing; on iPhone, open this link again once the app is installed.",
+        "noteIos": "On iPhone, this link opens straight in Ramio when you tap it from Messages, WhatsApp or Mail, once the app is installed. ",
+        "beta": "Ramio is in open beta: the game is free, you can play without an account, and everything you unlock stays yours.",
+        "legal": "Legal notice"
+      },
+      "es": {
+        "salon": "Invitación a una partida de Ramio",
+        "course": "Invitación a un duelo de desafíos de Ramio",
+        "differe": "Invitación a una partida de Ramio por turnos",
+        "beat": "Desafío Ramio: supera mi tiempo",
+        "puzzle": "Un desafío de Ramio por resolver",
+        "amiDe": "{de} te invita a jugar a Ramio",
+        "ami": "Invitación a jugar a Ramio",
+        "codeIntro": "Tu código de acceso:",
+        "ouvrir": "Abrir en la app Ramio",
+        "play": "Instalar Ramio desde Google Play",
+        "ios": "iPhone: unirse a la beta en TestFlight",
+        "noteSalon": "Si la app está instalada, este enlace la abre directamente. Si no, instala Ramio y escribe el código de arriba en «Sala privada › Unirse» (o «Desafíos › Unirse» para un duelo).",
+        "noteBeat": "Abre este enlace en tu teléfono con Ramio instalado: el desafío empieza directamente, con el tiempo de tu amigo por superar. Si no, instala Ramio y vuelve a abrir el enlace.",
+        "notePuzzle": "Abre este enlace en tu teléfono con Ramio instalado: el desafío empieza directamente. Si no, instala Ramio y vuelve a abrir el enlace. Puedes reorganizar toda la mesa; el objetivo es bajar todas las cartas de tu mano.",
+        "noteAmi": "Instala Ramio con este enlace y crea tu cuenta: recibes 300 fichas (oferta de la beta). En Android la app te reconoce tras la instalación; en iPhone, vuelve a abrir este enlace cuando la app esté instalada.",
+        "noteIos": "En iPhone, este enlace se abre directamente en Ramio cuando lo tocas desde Mensajes, WhatsApp o Mail, una vez instalada la app. ",
+        "beta": "Ramio está en beta abierta: el juego es gratis, se puede jugar sin cuenta y todo lo que desbloqueas se conserva.",
+        "legal": "Aviso legal"
+      },
+      "de": {
+        "salon": "Einladung zu einer Ramio-Partie",
+        "course": "Einladung zu einem Ramio-Rätselduell",
+        "differe": "Einladung zu einer Ramio-Partie im Zugverfahren",
+        "beat": "Ramio-Herausforderung: schlag meine Zeit",
+        "puzzle": "Ein Ramio-Rätsel zum Lösen",
+        "amiDe": "{de} lädt dich ein, Ramio zu spielen",
+        "ami": "Einladung, Ramio zu spielen",
+        "codeIntro": "Dein Zugangscode:",
+        "ouvrir": "In der Ramio-App öffnen",
+        "play": "Ramio bei Google Play laden",
+        "ios": "iPhone: der TestFlight-Beta beitreten",
+        "noteSalon": "Ist die App installiert, öffnet dieser Link sie direkt. Sonst installiere Ramio und gib den Code oben unter „Privater Raum › Beitreten“ ein (oder „Rätsel › Beitreten“ für ein Duell).",
+        "noteBeat": "Öffne diesen Link auf deinem Handy mit installiertem Ramio: Das Rätsel startet sofort, mit der Zeit deines Freundes als Ziel. Sonst installiere Ramio und öffne den Link erneut.",
+        "notePuzzle": "Öffne diesen Link auf deinem Handy mit installiertem Ramio: Das Rätsel startet sofort. Sonst installiere Ramio und öffne den Link erneut. Du darfst den ganzen Tisch umbauen; Ziel ist, alle Karten deiner Hand abzulegen.",
+        "noteAmi": "Installiere Ramio über diesen Link und erstelle dein Konto: Du erhältst 300 Chips (Beta-Angebot). Unter Android erkennt dich die App nach der Installation; auf dem iPhone öffne diesen Link erneut, sobald die App installiert ist.",
+        "noteIos": "Auf dem iPhone öffnet sich dieser Link direkt in Ramio, wenn du ihn in Nachrichten, WhatsApp oder Mail antippst, sobald die App installiert ist. ",
+        "beta": "Ramio ist in offener Beta: Das Spiel ist kostenlos, man kann ohne Konto spielen, und alles Freigeschaltete bleibt erhalten.",
+        "legal": "Impressum"
+      },
+      "it": {
+        "salon": "Invito a una partita di Ramio",
+        "course": "Invito a un duello di sfide Ramio",
+        "differe": "Invito a una partita di Ramio a turni",
+        "beat": "Sfida Ramio: batti il mio tempo",
+        "puzzle": "Una sfida Ramio da risolvere",
+        "amiDe": "{de} ti invita a giocare a Ramio",
+        "ami": "Invito a giocare a Ramio",
+        "codeIntro": "Il tuo codice di accesso:",
+        "ouvrir": "Apri nell'app Ramio",
+        "play": "Installa Ramio da Google Play",
+        "ios": "iPhone: entra nella beta TestFlight",
+        "noteSalon": "Se l'app è installata, questo link la apre direttamente. Altrimenti installa Ramio e inserisci il codice qui sopra in «Stanza privata › Entra» (o «Sfide › Entra» per un duello).",
+        "noteBeat": "Apri questo link sul telefono con Ramio installato: la sfida parte subito, con il tempo del tuo amico da battere. Altrimenti installa Ramio e riapri il link.",
+        "notePuzzle": "Apri questo link sul telefono con Ramio installato: la sfida parte subito. Altrimenti installa Ramio e riapri il link. Puoi riorganizzare tutto il tavolo; l'obiettivo è calare tutte le carte della tua mano.",
+        "noteAmi": "Installa Ramio da questo link e crea il tuo account: ricevi 300 gettoni (offerta della beta). Su Android l'app ti riconosce dopo l'installazione; su iPhone riapri questo link una volta installata l'app.",
+        "noteIos": "Su iPhone questo link si apre direttamente in Ramio quando lo tocchi da Messaggi, WhatsApp o Mail, una volta installata l'app. ",
+        "beta": "Ramio è in beta aperta: il gioco è gratuito, si può giocare senza account e tutto ciò che sblocchi resta tuo.",
+        "legal": "Note legali"
+      },
+      "pt": {
+        "salon": "Convite para uma partida de Ramio",
+        "course": "Convite para um duelo de desafios do Ramio",
+        "differe": "Convite para uma partida de Ramio por turnos",
+        "beat": "Desafio Ramio: supere o meu tempo",
+        "puzzle": "Um desafio do Ramio para resolver",
+        "amiDe": "{de} convida você para jogar Ramio",
+        "ami": "Convite para jogar Ramio",
+        "codeIntro": "Seu código de acesso:",
+        "ouvrir": "Abrir no app Ramio",
+        "play": "Instalar o Ramio pelo Google Play",
+        "ios": "iPhone: entrar no beta pelo TestFlight",
+        "noteSalon": "Se o app estiver instalado, este link o abre diretamente. Senão, instale o Ramio e digite o código acima em «Sala privada › Entrar» (ou «Desafios › Entrar» para um duelo).",
+        "noteBeat": "Abra este link no seu celular com o Ramio instalado: o desafio começa na hora, com o tempo do seu amigo para superar. Senão, instale o Ramio e abra o link de novo.",
+        "notePuzzle": "Abra este link no seu celular com o Ramio instalado: o desafio começa na hora. Senão, instale o Ramio e abra o link de novo. Você pode reorganizar toda a mesa; o objetivo é baixar todas as cartas da sua mão.",
+        "noteAmi": "Instale o Ramio por este link e crie a sua conta: você recebe 300 fichas (oferta da beta). No Android o app reconhece você depois da instalação; no iPhone, abra este link de novo quando o app estiver instalado.",
+        "noteIos": "No iPhone, este link abre direto no Ramio quando você toca nele em Mensagens, WhatsApp ou Mail, depois de instalar o app. ",
+        "beta": "O Ramio está em beta aberto: o jogo é grátis, dá para jogar sem conta e tudo o que você desbloqueia fica seu.",
+        "legal": "Aviso legal"
+      },
+      "pl": {
+        "salon": "Zaproszenie do gry w Ramio",
+        "course": "Zaproszenie na pojedynek zagadek Ramio",
+        "differe": "Zaproszenie do gry korespondencyjnej w Ramio",
+        "beat": "Wyzwanie Ramio: pobij mój czas",
+        "puzzle": "Zagadka Ramio do rozwiązania",
+        "amiDe": "{de} zaprasza Cię do gry w Ramio",
+        "ami": "Zaproszenie do gry w Ramio",
+        "codeIntro": "Twój kod dostępu:",
+        "ouvrir": "Otwórz w aplikacji Ramio",
+        "play": "Zainstaluj Ramio z Google Play",
+        "ios": "iPhone: dołącz do bety w TestFlight",
+        "noteSalon": "Jeśli aplikacja jest zainstalowana, ten link otwiera ją od razu. W przeciwnym razie zainstaluj Ramio i wpisz powyższy kod w „Prywatny pokój › Dołącz” (lub „Zagadki › Dołącz” dla pojedynku).",
+        "noteBeat": "Otwórz ten link na telefonie z zainstalowanym Ramio: zagadka startuje od razu, z czasem znajomego do pobicia. W przeciwnym razie zainstaluj Ramio i otwórz link ponownie.",
+        "notePuzzle": "Otwórz ten link na telefonie z zainstalowanym Ramio: zagadka startuje od razu. W przeciwnym razie zainstaluj Ramio i otwórz link ponownie. Możesz przekładać cały stół; celem jest wyłożenie wszystkich kart z ręki.",
+        "noteAmi": "Zainstaluj Ramio z tego linku i załóż konto: otrzymasz 300 żetonów (oferta bety). Na Androidzie aplikacja rozpozna Cię po instalacji; na iPhonie otwórz ten link ponownie po zainstalowaniu aplikacji.",
+        "noteIos": "Na iPhonie ten link otwiera się bezpośrednio w Ramio, gdy dotkniesz go w Wiadomościach, WhatsAppie lub Mailu, po zainstalowaniu aplikacji. ",
+        "beta": "Ramio jest w otwartej becie: gra jest darmowa, można grać bez konta, a wszystko, co odblokujesz, zostaje Twoje.",
+        "legal": "Nota prawna"
+      },
+      "tr": {
+        "salon": "Bir Ramio oyununa davet",
+        "course": "Bir Ramio bulmaca düellosuna davet",
+        "differe": "Sıralı bir Ramio oyununa davet",
+        "beat": "Ramio meydan okuması: zamanımı geç",
+        "puzzle": "Çözülecek bir Ramio bulmacası",
+        "amiDe": "{de} seni Ramio oynamaya davet ediyor",
+        "ami": "Ramio oynamaya davet",
+        "codeIntro": "Erişim kodun:",
+        "ouvrir": "Ramio uygulamasında aç",
+        "play": "Ramio'yu Google Play'den yükle",
+        "ios": "iPhone: TestFlight betasına katıl",
+        "noteSalon": "Uygulama yüklüyse bu bağlantı onu doğrudan açar. Değilse Ramio'yu yükle ve yukarıdaki kodu «Özel oda › Katıl» bölümüne gir (düello için «Bulmacalar › Katıl»).",
+        "noteBeat": "Bu bağlantıyı Ramio yüklü telefonunda aç: bulmaca, arkadaşının geçilecek süresiyle hemen başlar. Değilse Ramio'yu yükleyip bağlantıyı yeniden aç.",
+        "notePuzzle": "Bu bağlantıyı Ramio yüklü telefonunda aç: bulmaca hemen başlar. Değilse Ramio'yu yükleyip bağlantıyı yeniden aç. Tüm masayı yeniden düzenleyebilirsin; amaç elindeki tüm kartları indirmek.",
+        "noteAmi": "Ramio'yu bu bağlantıyla yükle ve hesabını oluştur: 300 jeton kazanırsın (beta teklifi). Android'de uygulama seni kurulumdan sonra tanır; iPhone'da uygulama yüklendikten sonra bu bağlantıyı yeniden aç.",
+        "noteIos": "iPhone'da bu bağlantı, uygulama yüklüyken Mesajlar, WhatsApp veya Mail'den dokunduğunda doğrudan Ramio'da açılır. ",
+        "beta": "Ramio açık betada: oyun ücretsiz, hesapsız oynanabilir ve açtığın her şey sende kalır.",
+        "legal": "Yasal bildirim"
+      },
+      "ro": {
+        "salon": "Invitație la o partidă de Ramio",
+        "course": "Invitație la un duel de provocări Ramio",
+        "differe": "Invitație la o partidă de Ramio prin corespondență",
+        "beat": "Provocare Ramio: bate-mi timpul",
+        "puzzle": "O provocare Ramio de rezolvat",
+        "amiDe": "{de} te invită să joci Ramio",
+        "ami": "Invitație de a juca Ramio",
+        "codeIntro": "Codul tău de acces:",
+        "ouvrir": "Deschide în aplicația Ramio",
+        "play": "Instalează Ramio din Google Play",
+        "ios": "iPhone: intră în beta prin TestFlight",
+        "noteSalon": "Dacă aplicația este instalată, acest link o deschide direct. Altfel, instalează Ramio și introdu codul de mai sus în „Cameră privată › Intră” (sau „Provocări › Intră” pentru un duel).",
+        "noteBeat": "Deschide acest link pe telefon cu Ramio instalat: provocarea pornește imediat, cu timpul prietenului tău de bătut. Altfel, instalează Ramio și redeschide linkul.",
+        "notePuzzle": "Deschide acest link pe telefon cu Ramio instalat: provocarea pornește imediat. Altfel, instalează Ramio și redeschide linkul. Poți rearanja toată masa; scopul este să așezi toate cărțile din mână.",
+        "noteAmi": "Instalează Ramio prin acest link și creează-ți contul: primești 300 de jetoane (oferta beta). Pe Android aplicația te recunoaște după instalare; pe iPhone redeschide linkul după ce aplicația este instalată.",
+        "noteIos": "Pe iPhone, acest link se deschide direct în Ramio când îl atingi din Mesaje, WhatsApp sau Mail, odată ce aplicația este instalată. ",
+        "beta": "Ramio este în beta deschisă: jocul este gratuit, se poate juca fără cont și tot ce deblochezi rămâne al tău.",
+        "legal": "Mențiuni legale"
+      },
+      "hu": {
+        "salon": "Meghívás egy Ramio-játszmára",
+        "course": "Meghívás egy Ramio feladványpárbajra",
+        "differe": "Meghívás egy levelezős Ramio-játszmára",
+        "beat": "Ramio kihívás: döntsd meg az időmet",
+        "puzzle": "Egy megoldandó Ramio-feladvány",
+        "amiDe": "{de} meghív, hogy játssz Ramiót",
+        "ami": "Meghívás Ramiót játszani",
+        "codeIntro": "A belépőkódod:",
+        "ouvrir": "Megnyitás a Ramio appban",
+        "play": "Ramio telepítése a Google Playről",
+        "ios": "iPhone: csatlakozz a TestFlight bétához",
+        "noteSalon": "Ha az app telepítve van, ez a link közvetlenül megnyitja. Ha nem, telepítsd a Ramiót, majd írd be a fenti kódot a „Privát szoba › Csatlakozás” alatt (párbajhoz: „Feladványok › Csatlakozás”).",
+        "noteBeat": "Nyisd meg ezt a linket a telefonodon telepített Ramióval: a feladvány azonnal indul, a barátod megdöntendő idejével. Ha nem, telepítsd a Ramiót, és nyisd meg újra a linket.",
+        "notePuzzle": "Nyisd meg ezt a linket a telefonodon telepített Ramióval: a feladvány azonnal indul. Ha nem, telepítsd a Ramiót, és nyisd meg újra a linket. Az egész asztalt átrendezheted; a cél a kezed minden lapjának lerakása.",
+        "noteAmi": "Telepítsd a Ramiót ezen a linken, és hozd létre a fiókodat: 300 zsetont kapsz (béta ajánlat). Androidon az app a telepítés után felismer; iPhone-on nyisd meg újra ezt a linket, amikor az app már telepítve van.",
+        "noteIos": "iPhone-on ez a link közvetlenül a Ramióban nyílik meg, ha Üzenetekből, WhatsAppból vagy Mailből érinted meg, miután az app telepítve van. ",
+        "beta": "A Ramio nyílt bétában van: a játék ingyenes, fiók nélkül is játszható, és minden, amit feloldasz, a tiéd marad.",
+        "legal": "Jogi nyilatkozat"
+      },
+      "ar": {
+        "salon": "دعوة إلى مباراة Ramio",
+        "course": "دعوة إلى مبارزة تحديات Ramio",
+        "differe": "دعوة إلى مباراة Ramio بالمراسلة",
+        "beat": "تحدي Ramio: تغلّب على وقتي",
+        "puzzle": "أحجية Ramio لحلّها",
+        "amiDe": "{de} يدعوك للعب Ramio",
+        "ami": "دعوة للعب Ramio",
+        "codeIntro": "رمز الدخول الخاص بك:",
+        "ouvrir": "افتح في تطبيق Ramio",
+        "play": "ثبّت Ramio من Google Play",
+        "ios": "iPhone: انضم إلى النسخة التجريبية عبر TestFlight",
+        "noteSalon": "إذا كان التطبيق مثبّتًا، يفتحه هذا الرابط مباشرة. وإلا فثبّت Ramio ثم أدخل الرمز أعلاه في «غرفة خاصة › انضمام» (أو «التحديات › انضمام» للمبارزة).",
+        "noteBeat": "افتح هذا الرابط على هاتفك مع Ramio مثبّتًا: يبدأ التحدي فورًا مع وقت صديقك الذي عليك التغلّب عليه. وإلا فثبّت Ramio ثم أعد فتح الرابط.",
+        "notePuzzle": "افتح هذا الرابط على هاتفك مع Ramio مثبّتًا: يبدأ التحدي فورًا. وإلا فثبّت Ramio ثم أعد فتح الرابط. يمكنك إعادة ترتيب المائدة كلها؛ الهدف وضع كل أوراق يدك.",
+        "noteAmi": "ثبّت Ramio عبر هذا الرابط وأنشئ حسابك: تحصل على 300 قطعة (عرض النسخة التجريبية). على Android يتعرّف عليك التطبيق بعد التثبيت؛ على iPhone أعد فتح هذا الرابط بعد تثبيت التطبيق.",
+        "noteIos": "على iPhone يُفتح هذا الرابط مباشرة في Ramio عند لمسه من الرسائل أو WhatsApp أو البريد، بعد تثبيت التطبيق. ",
+        "beta": "Ramio في نسخة تجريبية مفتوحة: اللعبة مجانية، ويمكن اللعب بدون حساب، وكل ما تفتحه يبقى لك.",
+        "legal": "الإشعار القانوني"
       }
-    }[lang];
+    };
+    var lang = (params.get("lang") || navigator.language || "fr").toLowerCase().slice(0, 2);
+    if (!L[lang]) lang = "en";
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+    var T = L[lang];
+    T.ami = de ? T.amiDe.replace("{de}", de) : T.ami;
 
     var el = function (id) { return document.getElementById(id); };
     document.title = T[cas] + " - Ramio";
@@ -203,7 +370,7 @@
     el("play").textContent = T.play;
     el("ios").textContent = T.ios;
     el("beta").textContent = T.beta;
-    el("legal").textContent = lang === "fr" ? "Mentions légales" : "Legal notice";
+    el("legal").textContent = T.legal;
     if (code) {
       el("code").textContent = code;
       el("note").textContent = T.noteSalon;
@@ -230,10 +397,7 @@
     var ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
     if (ios) {
       el("ouvrir").style.display = "none";
-      el("note").textContent = (lang === "fr"
-        ? "Sur iPhone, ce lien s'ouvre directement dans Ramio quand tu le touches depuis Messages, WhatsApp ou Mail, une fois l'app installée. "
-        : "On iPhone, this link opens straight in Ramio when you tap it from Messages, WhatsApp or Mail, once the app is installed. ")
-        + el("note").textContent;
+      el("note").textContent = T.noteIos + el("note").textContent;
       try {
         el("smart-banner").setAttribute("content",
           "app-id=6788317282, app-argument=" + location.href);
