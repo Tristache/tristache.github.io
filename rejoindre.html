@@ -8,52 +8,92 @@
   <meta name="apple-itunes-app" id="smart-banner" content="app-id=6788317282">
   <title>Rejoindre une partie - Ramio</title>
   <style>
+    :root { --vin: #7B1E3B; --vin2: #5E1229; --sable: #F3E3C8; --encre: #2A1B14; --brume: rgba(255,255,255,0.86); }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
       margin: 0;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: #2E7D5B;
-      color: #fff;
+      color: var(--encre);
+      background: #d9a36a url("assets/rejoindre-fond.jpg") center 45% / cover no-repeat fixed;
       display: flex;
       min-height: 100vh;
       align-items: center;
       justify-content: center;
       text-align: center;
+      position: relative;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(42,27,20,0.10) 0%, rgba(42,27,20,0.28) 60%, rgba(42,27,20,0.55) 100%);
+      pointer-events: none;
+    }
+    @media (max-aspect-ratio: 4/5) {
+      body { background-image: url("assets/rejoindre-fond-portrait.jpg"); background-position: center 30%; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .carte { animation: monter 480ms ease-out both; }
+      @keyframes monter { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
     }
     .carte {
-      background: #fff;
-      color: #222;
-      border-radius: 16px;
-      padding: 32px 24px;
+      position: relative;
+      background: var(--brume);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 22px;
+      padding: 30px 26px 24px;
       max-width: 420px;
-      margin: 16px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      width: calc(100% - 32px);
+      margin: 24px 16px;
+      box-shadow: 0 18px 50px rgba(42,27,20,0.35);
     }
-    h1 { color: #7B1E3B; font-size: 1.5em; margin-top: 0; }
+    .marque {
+      font-size: 0.78em;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--vin);
+      font-weight: 700;
+      margin: 0 0 10px;
+    }
+    h1 { color: var(--encre); font-size: 1.45em; line-height: 1.25; margin: 0 0 16px; text-wrap: balance; }
     .code {
       font-size: 2em;
-      letter-spacing: 0.2em;
-      font-weight: bold;
-      background: #f3f3f3;
-      border-radius: 8px;
-      padding: 12px;
-      margin: 16px 0;
+      letter-spacing: 0.22em;
+      font-weight: 700;
+      background: var(--sable);
+      color: var(--vin2);
+      border-radius: 12px;
+      padding: 12px 8px 12px 16px;
+      margin: 8px 0 18px;
     }
+    #code-intro { margin: 0 0 6px; color: #5b4a40; }
     a.bouton {
       display: block;
-      background: #7B1E3B;
+      background: var(--vin);
       color: #fff;
       text-decoration: none;
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 14px;
-      margin: 8px 0;
-      font-weight: bold;
+      margin: 10px 0;
+      font-weight: 700;
+      box-shadow: 0 6px 16px rgba(123,30,59,0.28);
+      transition: transform 120ms ease, box-shadow 120ms ease;
     }
-    a.secondaire { background: #2E7D5B; }
-    .note { font-size: 0.85em; color: #666; margin-top: 16px; }
+    a.bouton:hover, a.bouton:focus-visible { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(123,30,59,0.34); outline: none; }
+    a.bouton:focus-visible { box-shadow: 0 0 0 3px rgba(123,30,59,0.45); }
+    a.secondaire { background: rgba(123,30,59,0.08); color: var(--vin2); border: 1.5px solid rgba(123,30,59,0.35); box-shadow: none; }
+    a.secondaire:hover, a.secondaire:focus-visible { background: rgba(123,30,59,0.14); box-shadow: none; }
+    .note { font-size: 0.88em; line-height: 1.45; color: #5b4a40; margin: 16px 0 0; }
+    #beta { font-size: 0.8em; color: #7a6a5f; margin-top: 12px; }
+    footer { position: fixed; left: 0; right: 0; bottom: 10px; text-align: center; font-size: 0.75em; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.75); text-shadow: 0 1px 6px rgba(42,27,20,0.6); pointer-events: none; }
   </style>
 </head>
 <body>
   <div class="carte">
+    <p class="marque">Ramio</p>
     <h1 id="titre">Invitation à une partie de Ramio</h1>
     <p id="code-intro">Ton code d'accès :</p>
     <div class="code" id="code">------</div>
@@ -67,6 +107,7 @@
     <p class="note" id="note"></p>
     <p class="note" id="beta"></p>
   </div>
+  <footer>Quintain Games</footer>
   <script>
     // Page de repli des liens profonds de Ramio (2026-09-05, refonte) :
     // quatre cas — salon (code), « Bats mon temps » (defi + temps),
@@ -97,7 +138,7 @@
     var T = {
       fr: {
         salon: "Invitation à une partie de Ramio",
-        course: "Invitation à une course de défis Ramio",
+        course: "Invitation à un duel de défis Ramio",
         differe: "Invitation à une partie de Ramio en différé",
         beat: "Défi « Bats mon temps » Ramio",
         puzzle: "Un défi Ramio à résoudre",
@@ -108,7 +149,7 @@
         ios: "iPhone : rejoindre la bêta TestFlight",
         noteSalon: "Si l'app est installée, ce lien l'ouvre directement. Sinon, " +
           "installe Ramio puis saisis le code ci-dessus dans « Salon privé › " +
-          "Rejoindre » (ou « Défis › Rejoindre » pour une course).",
+          "Rejoindre » (ou « Défis › Rejoindre » pour un duel).",
         noteBeat: "Ouvre ce lien sur ton téléphone avec Ramio installé : le défi " +
           "se lance directement, avec le temps de ton ami à battre. Sinon, " +
           "installe Ramio puis rouvre le lien.",
@@ -125,7 +166,7 @@
       },
       en: {
         salon: "You're invited to a Ramio game",
-        course: "You're invited to a Ramio puzzle race",
+        course: "You're invited to a Ramio puzzle duel",
         differe: "You're invited to a Ramio correspondence game",
         beat: "Ramio challenge: beat my time",
         puzzle: "A Ramio puzzle to solve",
@@ -136,7 +177,7 @@
         ios: "iPhone: join the TestFlight beta",
         noteSalon: "If the app is installed, this link opens it directly. " +
           "Otherwise install Ramio, then enter the code above in " +
-          "“Private room › Join” (or “Puzzles › Join” for a race).",
+          "“Private room › Join” (or “Puzzles › Join” for a duel).",
         noteBeat: "Open this link on your phone with Ramio installed: the " +
           "puzzle starts right away, with your friend's time to beat. " +
           "Otherwise install Ramio, then open the link again.",
