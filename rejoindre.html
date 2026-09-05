@@ -237,7 +237,7 @@
           "app-id=6788317282, app-argument=" + location.href);
       } catch (e) {}
     } else {
-      el("ouvrir").href = "intent://" + location.host + "/rejoindre" + location.search +
+      el("ouvrir").href = "intent://" + location.host + location.pathname.replace(/\.html$/, "") + location.search +
         "#Intent;scheme=https;package=com.ramio;end";
     }
 
