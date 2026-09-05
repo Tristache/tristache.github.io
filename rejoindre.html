@@ -55,45 +55,148 @@
     <p id="code-intro">Ton code d'accès :</p>
     <div class="code" id="code">------</div>
     <a class="bouton" id="ouvrir" href="#">Ouvrir dans l'app Ramio</a>
-    <a class="bouton secondaire" href="https://play.google.com/store/apps/details?id=com.ramio">
+    <a class="bouton secondaire" id="play" href="https://play.google.com/store/apps/details?id=com.ramio">
       Installer Ramio sur Google Play
     </a>
-    <p class="note" id="note">
-      Si l'app est installée, le lien de l'invitation l'ouvre directement.
-      Sinon, installe Ramio puis saisis le code ci-dessus dans
-      « Salon privé &gt; Rejoindre » (ou « Défis &gt; Rejoindre » pour une
-      course). Pendant la bêta, l'accès Google Play passe par le lien
-      d'invitation des testeurs.
-    </p>
+    <a class="bouton secondaire" id="ios" href="https://testflight.apple.com/join/X8tt9MQw">
+      iPhone : rejoindre la bêta TestFlight
+    </a>
+    <p class="note" id="note"></p>
+    <p class="note" id="beta"></p>
   </div>
   <script>
+    // Page de repli des liens profonds de Ramio (2026-09-05, refonte) :
+    // quatre cas — salon (code), « Bats mon temps » (defi + temps),
+    // défi POSTÉ sur les réseaux (defi seul), PARRAINAGE (ami=<uid>) —
+    // en français ou en anglais selon le navigateur (ou ?lang=).
+    // Sur Android, le Play Store transmet le « referrer » à l'app au
+    // premier lancement : on y glisse le canal, le parrain ou le défi,
+    // pour que l'app reprenne l'invitation sans rouvrir le lien.
     var params = new URLSearchParams(location.search);
-    var code = (params.get("code") || "").toUpperCase();
-    var course = params.get("type") === "course";
-    if (code) { document.getElementById("code").textContent = code; }
-    if (course) {
-      document.getElementById("titre").textContent =
-        "Invitation à une course de défis Ramio";
+    var clean = function (v, n) {
+      return (v || "").replace(/[^a-zA-Z0-9_-]/g, "").slice(0, n || 40);
+    };
+    var code = clean(params.get("code"), 8).toUpperCase();
+    var type = params.get("type") || "";
+    var defi = clean(params.get("defi"), 16);
+    var temps = params.get("temps") || "";
+    var ami = clean(params.get("ami"), 36);
+    var de = (params.get("de") || "").slice(0, 20);
+    var src = clean(params.get("src"), 40);
+    var lang = params.get("lang") ||
+      ((navigator.language || "fr").toLowerCase().indexOf("fr") === 0 ? "fr" : "en");
+    if (lang !== "fr") lang = "en";
+    document.documentElement.lang = lang;
+
+    var cas = ami ? "ami" : defi ? (temps ? "beat" : "puzzle") :
+      type === "course" ? "course" : type === "differe" ? "differe" : "salon";
+
+    var T = {
+      fr: {
+        salon: "Invitation à une partie de Ramio",
+        course: "Invitation à une course de défis Ramio",
+        differe: "Invitation à une partie de Ramio en différé",
+        beat: "Défi « Bats mon temps » Ramio",
+        puzzle: "Un défi Ramio à résoudre",
+        ami: de ? de + " t'invite à jouer à Ramio" : "Invitation à jouer à Ramio",
+        codeIntro: "Ton code d'accès :",
+        ouvrir: "Ouvrir dans l'app Ramio",
+        play: "Installer Ramio sur Google Play",
+        ios: "iPhone : rejoindre la bêta TestFlight",
+        noteSalon: "Si l'app est installée, ce lien l'ouvre directement. Sinon, " +
+          "installe Ramio puis saisis le code ci-dessus dans « Salon privé › " +
+          "Rejoindre » (ou « Défis › Rejoindre » pour une course).",
+        noteBeat: "Ouvre ce lien sur ton téléphone avec Ramio installé : le défi " +
+          "se lance directement, avec le temps de ton ami à battre. Sinon, " +
+          "installe Ramio puis rouvre le lien.",
+        notePuzzle: "Ouvre ce lien sur ton téléphone avec Ramio installé : le " +
+          "défi se lance directement. Sinon, installe Ramio puis rouvre le lien. " +
+          "Tu peux réorganiser toute la table ; le but est de poser toutes " +
+          "les cartes de ta main.",
+        noteAmi: "Installe Ramio par ce lien et crée ton compte : tu reçois " +
+          "300 jetons (offre de la bêta). Sur Android, l'app te reconnaît " +
+          "après l'installation ; sur iPhone, rouvre ce lien une fois l'app " +
+          "installée.",
+        beta: "Ramio est en bêta ouverte : le jeu est gratuit, on peut y jouer " +
+          "sans compte, et tout ce qui se débloque reste acquis."
+      },
+      en: {
+        salon: "You're invited to a Ramio game",
+        course: "You're invited to a Ramio puzzle race",
+        differe: "You're invited to a Ramio correspondence game",
+        beat: "Ramio challenge: beat my time",
+        puzzle: "A Ramio puzzle to solve",
+        ami: de ? de + " invites you to play Ramio" : "You're invited to play Ramio",
+        codeIntro: "Your room code:",
+        ouvrir: "Open in the Ramio app",
+        play: "Get Ramio on Google Play",
+        ios: "iPhone: join the TestFlight beta",
+        noteSalon: "If the app is installed, this link opens it directly. " +
+          "Otherwise install Ramio, then enter the code above in " +
+          "“Private room › Join” (or “Puzzles › Join” for a race).",
+        noteBeat: "Open this link on your phone with Ramio installed: the " +
+          "puzzle starts right away, with your friend's time to beat. " +
+          "Otherwise install Ramio, then open the link again.",
+        notePuzzle: "Open this link on your phone with Ramio installed: the " +
+          "puzzle starts right away. Otherwise install Ramio, then open the " +
+          "link again. You may rearrange the whole table; the goal is to " +
+          "play every card from your hand.",
+        noteAmi: "Install Ramio through this link and create your account: " +
+          "you get 300 tokens (beta offer). On Android the app recognises " +
+          "you after installing; on iPhone, open this link again once the " +
+          "app is installed.",
+        beta: "Ramio is in open beta: the game is free, you can play without " +
+          "an account, and everything you unlock stays yours."
+      }
+    }[lang];
+
+    var el = function (id) { return document.getElementById(id); };
+    document.title = T[cas] + " - Ramio";
+    el("titre").textContent = T[cas];
+    el("code-intro").textContent = T.codeIntro;
+    el("ouvrir").textContent = T.ouvrir;
+    el("play").textContent = T.play;
+    el("ios").textContent = T.ios;
+    el("beta").textContent = T.beta;
+    if (code) {
+      el("code").textContent = code;
+      el("note").textContent = T.noteSalon;
+    } else {
+      el("code-intro").style.display = "none";
+      el("code").style.display = "none";
+      el("note").textContent = cas === "ami" ? T.noteAmi :
+        cas === "beat" ? T.noteBeat : cas === "puzzle" ? T.notePuzzle : T.noteSalon;
     }
-    // Lien « Bats mon temps » (défi d'un ami) : pas de code à recopier,
-    // le lien seul lance le défi dans l'app.
-    if (params.get("defi")) {
-      document.getElementById("titre").textContent =
-        "Défi « Bats mon temps » Ramio";
-      document.getElementById("code-intro").style.display = "none";
-      document.getElementById("code").style.display = "none";
-      document.getElementById("note").textContent =
-        "Si tu as reçu un défi, ouvre ce lien sur ton téléphone avec " +
-        "Ramio installé : le défi se lance directement, avec le temps " +
-        "de ton ami à battre. Sinon, installe Ramio puis rouvre le lien. " +
-        "Pendant la bêta, l'accès Google Play passe par le lien " +
-        "d'invitation des testeurs.";
-    }
+
+    // Referrer Play : canal + ce que l'app doit reprendre après l'install.
+    var utm = "utm_source=" + (src || "lien") + "&utm_medium=rejoindre&utm_campaign=" + cas;
+    if (ami) utm += "&ami=" + ami;
+    if (defi) utm += "&defi=" + defi;
+    el("play").href = "https://play.google.com/store/apps/details?id=com.ramio&referrer=" +
+      encodeURIComponent(utm);
+
     // Force l'ouverture dans l'app sur Android quand la page s'est
     // ouverte dans le navigateur malgré l'app installée.
-    document.getElementById("ouvrir").href =
-      "intent://tristache.github.io/rejoindre" + location.search +
+    el("ouvrir").href = "intent://tristache.github.io/rejoindre" + location.search +
       "#Intent;scheme=https;package=com.ramio;end";
+
+    // Mesure (même RPC que le site : migration 74) : visite + clics stores.
+    var log = function (kind) {
+      try {
+        fetch("https://zkrkaimrybxbdrznxhxx.supabase.co/rest/v1/rpc/log_site_visit", {
+          method: "POST", keepalive: true,
+          headers: {
+            apikey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InprcmthaW1yeWJ4YmRyem54aHh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMDkzMTYsImV4cCI6MjA5NjY4NTMxNn0.28Ns814SQSFXaKRR0-ZrHoX1G8Cpnhf6sNCZ6kgtAio",
+            Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InprcmthaW1yeWJ4YmRyem54aHh4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMDkzMTYsImV4cCI6MjA5NjY4NTMxNn0.28Ns814SQSFXaKRR0-ZrHoX1G8Cpnhf6sNCZ6kgtAio",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ p_kind: kind, p_src: src || "rejoindre-" + cas, p_lang: lang, p_ref: "" })
+        }).catch(function () {});
+      } catch (e) {}
+    };
+    el("play").addEventListener("click", function () { log("play"); });
+    el("ios").addEventListener("click", function () { log("testflight"); });
+    log("visit");
   </script>
 </body>
 </html>
