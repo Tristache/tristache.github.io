@@ -4,11 +4,16 @@
     "details": [
       {
         "appID": "3SL5ZC838T.com.ramio",
-        "paths": ["/rejoindre*"]
+        "paths": [
+          "/rejoindre*",
+          "/join*"
+        ]
       },
       {
         "appID": "3SL5ZC838T.com.meldfall",
-        "paths": ["/meldfall*"]
+        "paths": [
+          "/meldfall*"
+        ]
       }
     ]
   }
