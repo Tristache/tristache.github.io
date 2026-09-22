@@ -1,6 +1,6 @@
 {
   "_doc": "Dernier build publié de l'app Meldfall (app/lib/cascade/meldfall_update.dart). À mettre à jour à CHAQUE build Meldfall disponible chez les testeurs : latestBuild = le numéro après le + de version: dans app/pubspec.yaml du dépôt Quintain-Games/meldfall (source unique, Android et iOS). La clé ios porte itms-beta:// (TestFlight) jusqu'à la fiche App Store.",
-  "latestBuild": 17,
+  "latestBuild": 18,
   "android": "https://play.google.com/store/apps/details?id=com.meldfall",
   "ios": "itms-beta://"
 }
