@@ -1,0 +1,37 @@
+# Surveillance des serveurs (02/10/2026) : toutes les 10 minutes, chaque
+# adresse doit répondre ; trois essais espacés de 20 s avant de conclure à
+# une panne. Un passage en échec déclenche le courriel « Run failed » de
+# GitHub au compte Tristache (réglage Notifications > Actions).
+name: Surveillance des serveurs
+
+on:
+  schedule:
+    - cron: "4,14,24,34,44,54 * * * *"
+  workflow_dispatch:
+
+jobs:
+  sondes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Interroger les serveurs
+        run: |
+          panne=0
+          for url in \
+            https://rami-chinois.fly.dev/health \
+            https://meldfall-server.fly.dev/health \
+            https://quintaingames.com/ramio/; do
+            ok=0
+            for essai in 1 2 3; do
+              code=$(curl -sL -o /dev/null -w "%{http_code}" -m 15 "$url" || true)
+              if [ "$code" = "200" ]; then ok=1; break; fi
+              sleep 20
+            done
+            if [ "$ok" = "1" ]; then
+              echo "OK     $url"
+            else
+              echo "PANNE  $url (dernier code : $code)"
+              panne=1
+            fi
+          done
+          exit $panne
