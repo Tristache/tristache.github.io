@@ -10,9 +10,18 @@
         ]
       },
       {
-        "appID": "3SL5ZC838T.com.meldfall",
-        "paths": [
-          "/meldfall*"
+        "appIDs": [
+          "3SL5ZC838T.com.meldfall"
+        ],
+        "components": [
+          {
+            "/": "/meldfall",
+            "comment": "liens de partage (jour, graine, salon, ref)"
+          },
+          {
+            "/": "/meldfall.html",
+            "comment": "retour des e-mails d'authentification"
+          }
         ]
       }
     ]

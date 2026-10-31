@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Page d'arrivée des liens partagés : hors des moteurs de recherche. -->
+  <meta name="robots" content="noindex">
   <title>Meldfall</title>
   <link rel="icon" type="image/png" sizes="180x180" href="meldfall-favicon.png">
   <link rel="apple-touch-icon" href="meldfall-favicon.png">
@@ -28,16 +30,7 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
     }
     h1 { color: #7BE3B7; font-size: 1.5em; margin-top: 0; }
-    .code {
-      font-size: 2em;
-      letter-spacing: 0.2em;
-      font-weight: bold;
-      background: #10221C;
-      color: #FFC93C;
-      border-radius: 8px;
-      padding: 12px;
-      margin: 16px 0;
-    }
+    .pitch { font-size: 0.95em; line-height: 1.45; color: #cfe3da; }
     a.bouton {
       display: block;
       background: #7BE3B7;
@@ -57,28 +50,282 @@
   <div class="carte">
     <h1 id="titre">Meldfall</h1>
     <p id="intro">Un ami t'invite à jouer.</p>
-    <div class="code" id="code" style="display:none">------</div>
+    <p class="pitch" id="pitch">
+      Les cartes tombent du filon : assemble-les en combinaisons de rami,
+      elles rapportent leurs carats et deviennent des gemmes. Chaque jour,
+      la commande du jour ; à toute heure, la commande du Roi.
+    </p>
     <a class="bouton" id="ouvrir" href="#">Ouvrir dans Meldfall</a>
-    <a class="bouton secondaire" href="https://play.google.com/store/apps/details?id=com.meldfall">
+    <a class="bouton secondaire" id="installer" href="https://play.google.com/store/apps/details?id=com.meldfall">
       Installer Meldfall sur Google Play
     </a>
     <p class="note" id="note">
       Si l'app est installée, ce lien l'ouvre directement. Sinon,
-      installe Meldfall puis rouvre le lien. Pendant la bêta, l'accès
-      passe par le lien d'invitation des testeurs (Google Play ou
-      TestFlight).
+      installe Meldfall puis rouvre le lien.
     </p>
   </div>
   <p class="note" style="text-align:center;max-width:420px;margin:0 auto 32px;">
-    <a href="meldfall-confidentialite.html">Politique de confidentialité</a>
-    · <a href="meldfall-conditions.html">Conditions d'utilisation</a>
-    · <a href="meldfall-suppression-compte.html">Supprimer son compte</a>
+    <a id="confid" href="meldfall-confidentialite.html">Politique de confidentialité</a>
+    · <a id="cond" href="meldfall-conditions.html">Conditions d'utilisation</a>
+    · <a id="suppr" href="meldfall-suppression-compte.html">Supprimer son compte</a>
   </p>
   <script>
+    // Les onze langues du jeu, au lexique de l'atelier (app_*.arb). Le
+    // français ci-dessus reste pour qui n'a pas de JavaScript.
+    var TEXTES = {
+      fr: {
+        invite: "Un ami t'invite à jouer.",
+        pitch: "Les cartes tombent du filon : assemble-les en combinaisons de rami, elles rapportent leurs carats et deviennent des gemmes. Chaque jour, la commande du jour ; à toute heure, la commande du Roi.",
+        ouvrir: "Ouvrir dans Meldfall",
+        installer: "Installer Meldfall sur Google Play",
+        note: "Si l'app est installée, ce lien l'ouvre directement. Sinon, installe Meldfall puis rouvre le lien.",
+        jourTitre: "La commande du jour",
+        jour: "Même filon pour tout le monde, à toi de jouer.",
+        etabliTitre: "L'établi voisin",
+        etabliDe: "{de} te défie sur sa donne : mêmes cartes, son empreinte en face.",
+        etabli: "Un ami te défie sur sa donne : mêmes cartes, son empreinte en face.",
+        expireTitre: "Lien expiré",
+        expire: "Ce lien de confirmation n'est plus valable ({err}). Refais la demande depuis Réglages > Compte.",
+        okTitre: "Adresse confirmée",
+        ok: "Ton compte Meldfall est prêt : reviens dans l'app, elle te reconnaît.",
+        okNote: "Si tu as ouvert ce lien sur un autre appareil, ouvre simplement Meldfall sur ton téléphone.",
+        confid: "Politique de confidentialité",
+        cond: "Conditions d'utilisation",
+        suppr: "Supprimer son compte"
+      },
+      en: {
+        invite: "A friend invites you to play.",
+        pitch: "Cards fall from the vein: arrange them into rummy melds, which pay their carats and become gems. Every day, the daily commission; at any hour, the King's commission.",
+        ouvrir: "Open in Meldfall",
+        installer: "Get Meldfall on Google Play",
+        note: "If the app is installed, this link opens it directly. Otherwise, install Meldfall and open the link again.",
+        jourTitre: "The daily commission",
+        jour: "Same vein for everyone, your turn.",
+        etabliTitre: "The next bench",
+        etabliDe: "{de} challenges you on their deal: same cards, their impression facing you.",
+        etabli: "A friend challenges you on their deal: same cards, their impression facing you.",
+        expireTitre: "Link expired",
+        expire: "This confirmation link is no longer valid ({err}). Ask for a new one in Settings > Account.",
+        okTitre: "Address confirmed",
+        ok: "Your Meldfall account is ready: go back to the app, it will recognize you.",
+        okNote: "If you opened this link on another device, just open Meldfall on your phone.",
+        confid: "Privacy policy",
+        cond: "Terms of use",
+        suppr: "Delete my account"
+      },
+      de: {
+        invite: "Du bist zu einer Partie eingeladen.",
+        pitch: "Die Karten fallen aus der Ader: Lege sie zu Rommé-Kombinationen, die ihre Karat zahlen und zu Edelsteinen werden. Jeden Tag der Auftrag des Tages, zu jeder Stunde der Auftrag des Königs.",
+        ouvrir: "In Meldfall öffnen",
+        installer: "Meldfall bei Google Play laden",
+        note: "Ist die App installiert, öffnet dieser Link sie direkt. Sonst installiere Meldfall und öffne den Link noch einmal.",
+        jourTitre: "Der Auftrag des Tages",
+        jour: "Dieselbe Ader für alle, du bist dran.",
+        etabliTitre: "Die Werkbank nebenan",
+        etabliDe: "{de} fordert dich heraus: dieselben Karten, dir gegenüber der Abdruck der Partie.",
+        etabli: "Eine Herausforderung für dich: dieselben Karten, dir gegenüber der Abdruck der Partie.",
+        expireTitre: "Link abgelaufen",
+        expire: "Dieser Bestätigungslink ist nicht mehr gültig ({err}). Fordere unter Einstellungen > Konto einen neuen an.",
+        okTitre: "Adresse bestätigt",
+        ok: "Dein Meldfall-Konto ist bereit: Geh zurück in die App, sie erkennt dich.",
+        okNote: "Hast du diesen Link auf einem anderen Gerät geöffnet, öffne einfach Meldfall auf deinem Handy.",
+        confid: "Datenschutzerklärung",
+        cond: "Nutzungsbedingungen",
+        suppr: "Mein Konto löschen"
+      },
+      es: {
+        invite: "Te invitan a jugar.",
+        pitch: "Las cartas caen del filón: júntalas en combinaciones de rummy, que pagan sus quilates y se convierten en gemas. Cada día, el encargo del día; a cualquier hora, el encargo del Rey.",
+        ouvrir: "Abrir en Meldfall",
+        installer: "Instalar Meldfall desde Google Play",
+        note: "Si la app está instalada, este enlace la abre directamente. Si no, instala Meldfall y vuelve a abrir el enlace.",
+        jourTitre: "El encargo del día",
+        jour: "Mismo filón para todos, te toca.",
+        etabliTitre: "El banco de al lado",
+        etabliDe: "{de} te reta con su reparto: mismas cartas, su impronta enfrente.",
+        etabli: "Te retan con un reparto: mismas cartas, una impronta enfrente.",
+        expireTitre: "Enlace caducado",
+        expire: "Este enlace de confirmación ya no es válido ({err}). Vuelve a pedirlo en Ajustes > Cuenta.",
+        okTitre: "Dirección confirmada",
+        ok: "Tu cuenta de Meldfall está lista: vuelve a la app, te reconocerá.",
+        okNote: "Si abriste este enlace en otro dispositivo, abre Meldfall en tu teléfono.",
+        confid: "Política de privacidad",
+        cond: "Condiciones de uso",
+        suppr: "Eliminar mi cuenta"
+      },
+      it: {
+        invite: "Ti invitano a giocare.",
+        pitch: "Le carte cadono dal filone: disponile in combinazioni di ramino, che pagano i loro carati e diventano gemme. Ogni giorno la commessa del giorno, a ogni ora la commessa del Re.",
+        ouvrir: "Apri in Meldfall",
+        installer: "Installa Meldfall da Google Play",
+        note: "Se l'app è installata, questo link la apre direttamente. Altrimenti installa Meldfall e riapri il link.",
+        jourTitre: "La commessa del giorno",
+        jour: "Stesso filone per tutti, tocca a te.",
+        etabliTitre: "Il banco accanto",
+        etabliDe: "{de} ti sfida sulla sua mano: stesse carte, la sua impronta di fronte.",
+        etabli: "Ti sfidano su una mano: stesse carte, un'impronta di fronte.",
+        expireTitre: "Link scaduto",
+        expire: "Questo link di conferma non è più valido ({err}). Richiedine uno nuovo da Impostazioni > Account.",
+        okTitre: "Indirizzo confermato",
+        ok: "Il tuo account Meldfall è pronto: torna nell'app, ti riconoscerà.",
+        okNote: "Se hai aperto questo link su un altro dispositivo, apri semplicemente Meldfall sul tuo telefono.",
+        confid: "Informativa sulla privacy",
+        cond: "Condizioni d'uso",
+        suppr: "Elimina il mio account"
+      },
+      pt: {
+        invite: "Chegou um convite para jogar.",
+        pitch: "As cartas caem do veio: junte-as em combinações de rummy, que pagam seus quilates e viram gemas. Todo dia, a encomenda do dia; a qualquer hora, a encomenda do Rei.",
+        ouvrir: "Abrir no Meldfall",
+        installer: "Instalar o Meldfall pelo Google Play",
+        note: "Se o app estiver instalado, este link abre direto nele. Se não, instale o Meldfall e abra o link de novo.",
+        jourTitre: "A encomenda do dia",
+        jour: "Mesmo veio para todo mundo, é a sua vez.",
+        etabliTitre: "A bancada ao lado",
+        etabliDe: "{de} desafia você nesta mão: mesmas cartas, com a impressão da partida à sua frente.",
+        etabli: "Chegou um desafio: mesmas cartas, com a impressão da partida à sua frente.",
+        expireTitre: "Link expirado",
+        expire: "Este link de confirmação não é mais válido ({err}). Peça outro em Configurações > Conta.",
+        okTitre: "Endereço confirmado",
+        ok: "Sua conta Meldfall está pronta: volte ao app, ele reconhece você.",
+        okNote: "Se você abriu este link em outro aparelho, é só abrir o Meldfall no seu celular.",
+        confid: "Política de privacidade",
+        cond: "Termos de uso",
+        suppr: "Excluir minha conta"
+      },
+      pl: {
+        invite: "Masz zaproszenie do gry.",
+        pitch: "Karty spadają z żyły: łącz je w układy remikowe, a zapłacą swoje karaty i staną się kamieniami. Codziennie zlecenie dnia, o każdej porze zlecenie Króla.",
+        ouvrir: "Otwórz w Meldfall",
+        installer: "Zainstaluj Meldfall z Google Play",
+        note: "Jeśli aplikacja jest zainstalowana, ten link od razu ją otworzy. Jeśli nie, zainstaluj Meldfall i otwórz link ponownie.",
+        jourTitre: "Zlecenie dnia",
+        jour: "Ta sama żyła dla wszystkich, twój ruch.",
+        etabliTitre: "Sąsiedni warsztat",
+        etabliDe: "{de} rzuca ci wyzwanie w swoim rozdaniu: te same karty, a naprzeciw odcisk tej partii.",
+        etabli: "Ktoś rzuca ci wyzwanie w swoim rozdaniu: te same karty, a naprzeciw odcisk tej partii.",
+        expireTitre: "Link wygasł",
+        expire: "Ten link potwierdzający jest już nieważny ({err}). Poproś o nowy w sekcji Ustawienia > Konto.",
+        okTitre: "Adres potwierdzony",
+        ok: "Twoje konto Meldfall jest gotowe: wróć do aplikacji, rozpozna cię.",
+        okNote: "Jeśli ten link otwarto na innym urządzeniu, po prostu otwórz Meldfall na telefonie.",
+        confid: "Polityka prywatności",
+        cond: "Warunki korzystania",
+        suppr: "Usuń moje konto"
+      },
+      ro: {
+        invite: "Ai primit o invitație la joc.",
+        pitch: "Cărțile cad din filon: așază-le în combinații de remi, ele își plătesc caratele și devin geme. În fiecare zi, comanda zilei; la orice oră, comanda Regelui.",
+        ouvrir: "Deschide în Meldfall",
+        installer: "Instalează Meldfall din Google Play",
+        note: "Dacă aplicația este instalată, acest link o deschide direct. Altfel, instalează Meldfall și deschide din nou linkul.",
+        jourTitre: "Comanda zilei",
+        jour: "Același filon pentru toți, e rândul tău.",
+        etabliTitre: "Bancul vecin",
+        etabliDe: "{de} te provoacă pe împărțirea sa: aceleași cărți, cu amprenta sa în față.",
+        etabli: "Cineva te provoacă pe împărțirea sa: aceleași cărți, cu amprenta sa în față.",
+        expireTitre: "Link expirat",
+        expire: "Acest link de confirmare nu mai este valabil ({err}). Cere unul nou din Setări > Cont.",
+        okTitre: "Adresă confirmată",
+        ok: "Contul tău Meldfall este gata: revino în aplicație, te va recunoaște.",
+        okNote: "Dacă ai deschis acest link pe alt dispozitiv, deschide pur și simplu Meldfall pe telefon.",
+        confid: "Politica de confidențialitate",
+        cond: "Termeni de utilizare",
+        suppr: "Șterge-mi contul"
+      },
+      hu: {
+        invite: "Meghívtak egy játszmára.",
+        pitch: "A lapok az érből hullanak: rakd őket römikombinációkba, kifizetik a karátjaikat, és kövekké válnak. Minden nap a nap megrendelése, bármikor a Király megrendelése.",
+        ouvrir: "Megnyitás a Meldfallban",
+        installer: "A Meldfall telepítése a Google Playről",
+        note: "Ha az alkalmazás telepítve van, ez a link közvetlenül megnyitja. Ha nincs, telepítsd a Meldfallt, majd nyisd meg újra a linket.",
+        jourTitre: "A nap megrendelése",
+        jour: "Mindenkinek ugyanaz az ér, te jössz.",
+        etabliTitre: "A szomszéd munkapad",
+        etabliDe: "{de} kihív a saját osztására: ugyanazok a lapok, veled szemben a lenyomata.",
+        etabli: "Egy barátod kihív a saját osztására: ugyanazok a lapok, veled szemben a lenyomata.",
+        expireTitre: "A link lejárt",
+        expire: "Ez a megerősítő link már nem érvényes ({err}). Kérj újat a Beállítások > Fiók menüben.",
+        okTitre: "Cím megerősítve",
+        ok: "A Meldfall-fiókod elkészült: térj vissza az alkalmazásba, felismer.",
+        okNote: "Ha ezt a linket egy másik eszközön nyitottad meg, egyszerűen nyisd meg a Meldfallt a telefonodon.",
+        confid: "Adatvédelmi tájékoztató",
+        cond: "Felhasználási feltételek",
+        suppr: "Fiók törlése"
+      },
+      tr: {
+        invite: "Oyuna davet edildin.",
+        pitch: "Kartlar damardan düşer: onları remi kombinasyonlarına diz, karatlarını öderler ve taşa dönüşürler. Her gün günün siparişi, her an Kralın siparişi.",
+        ouvrir: "Meldfall'da aç",
+        installer: "Meldfall'u Google Play'den yükle",
+        note: "Uygulama yüklüyse bu bağlantı onu doğrudan açar. Yüklü değilse Meldfall'u yükle ve bağlantıyı yeniden aç.",
+        jourTitre: "Günün siparişi",
+        jour: "Herkese aynı damar, sıra sende.",
+        etabliTitre: "Yan tezgâh",
+        etabliDe: "{de} kendi dağıtımında sana meydan okuyor: aynı kartlar, karşında onun izi.",
+        etabli: "Bir arkadaşın kendi dağıtımında sana meydan okuyor: aynı kartlar, karşında onun izi.",
+        expireTitre: "Bağlantının süresi doldu",
+        expire: "Bu onay bağlantısı artık geçerli değil ({err}). Ayarlar > Hesap bölümünden yenisini iste.",
+        okTitre: "Adres onaylandı",
+        ok: "Meldfall hesabın hazır: uygulamaya dön, seni tanıyacak.",
+        okNote: "Bu bağlantıyı başka bir cihazda açtıysan Meldfall'u telefonunda açman yeterli.",
+        confid: "Gizlilik politikası",
+        cond: "Kullanım koşulları",
+        suppr: "Hesabımı sil"
+      },
+      ar: {
+        invite: "وصلتك دعوة إلى اللعب.",
+        pitch: "تسقط البطاقات من العِرق: رتّبها في تركيبات رامي، فتدفع قراريطها وتصير أحجارًا. كل يوم طلبية اليوم، وفي أي وقت طلبية الملك.",
+        ouvrir: "افتح في Meldfall",
+        installer: "ثبّت Meldfall من Google Play",
+        note: "إذا كان التطبيق مثبّتًا يفتحه هذا الرابط مباشرة. وإلا فثبّت Meldfall ثم افتح الرابط من جديد.",
+        jourTitre: "طلبية اليوم",
+        jour: "العِرق نفسه للجميع، دورك.",
+        etabliTitre: "المنضدة المجاورة",
+        etabliDe: "تحدٍّ من {de}: البطاقات نفسها، وبصمة الجولة أمامك.",
+        etabli: "وصلك تحدٍّ: البطاقات نفسها، وبصمة الجولة أمامك.",
+        expireTitre: "انتهت صلاحية الرابط",
+        expire: "رابط التأكيد هذا لم يعد صالحًا ({err}). اطلب رابطًا جديدًا من الإعدادات ثم الحساب.",
+        okTitre: "تم تأكيد العنوان",
+        ok: "حسابك في Meldfall جاهز: عُد إلى التطبيق وسيتعرّف عليك.",
+        okNote: "إذا فتحت هذا الرابط على جهاز آخر، فافتح Meldfall على هاتفك فحسب.",
+        confid: "سياسة الخصوصية",
+        cond: "شروط الاستخدام",
+        suppr: "حذف حسابي"
+      }
+    };
+
+    // Langue du navigateur, l'anglais à défaut ; l'arabe de droite à gauche.
+    var langues = navigator.languages && navigator.languages.length ?
+      navigator.languages : [navigator.language || ""];
+    var lang = "en";
+    for (var i = 0; i < langues.length; i++) {
+      var code = String(langues[i] || "").slice(0, 2).toLowerCase();
+      if (TEXTES[code]) { lang = code; break; }
+    }
+    var t = TEXTES[lang];
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+
+    function poser(id, texte) {
+      document.getElementById(id).textContent = texte;
+    }
+    function cacher(id) {
+      document.getElementById(id).style.display = "none";
+    }
+    // Une valeur venue du lien, isolée du sens de lecture et insérée
+    // telle quelle (jamais de motif $ de replace).
+    function inserer(modele, cle, valeur) {
+      return modele.replace("{" + cle + "}", function () {
+        return "⁨" + valeur + "⁩";
+      });
+    }
+    ["invite", "pitch", "ouvrir", "installer", "note", "confid", "cond",
+     "suppr"].forEach(function (id) {
+      poser(id === "invite" ? "intro" : id, t[id]);
+    });
+
     var params = new URLSearchParams(location.search);
-    var titre = document.getElementById("titre");
-    var intro = document.getElementById("intro");
-    var salon = (params.get("salon") || "").toUpperCase();
     var de = params.get("de") || "";
     // Retour d'un e-mail d'authentification Supabase (confirmation
     // d'adresse) : ?code= (PKCE) ou #access_token= / type= (implicite).
@@ -88,36 +335,25 @@
     var authErr = params.get("error_description") || hash.get("error_description");
     var authOk = params.has("code") || hash.has("access_token") ||
       params.has("type") || hash.has("type");
+    // ?salon= : le jeu en direct est fermé, la page montre l'invitation
+    // générale ; le lien entier passe quand même à l'app (bouton Ouvrir).
     if (authErr) {
-      titre.textContent = "Lien expiré";
-      intro.textContent = "Ce lien de confirmation n'est plus valable (" +
-        authErr + "). Refais la demande depuis Réglages > Compte.";
-      document.getElementById("ouvrir").style.display = "none";
-      document.getElementById("note").textContent = "";
+      poser("titre", t.expireTitre);
+      poser("intro", inserer(t.expire, "err", authErr));
+      cacher("pitch");
+      cacher("ouvrir");
+      poser("note", "");
     } else if (authOk) {
-      titre.textContent = "Adresse confirmée";
-      intro.textContent = "Ton compte Meldfall est prêt : reviens dans " +
-        "l'app, elle te reconnaît.";
-      document.getElementById("note").textContent =
-        "Si tu as ouvert ce lien sur un autre appareil, ouvre simplement " +
-        "Meldfall sur ton téléphone.";
-    } else if (salon) {
-      titre.textContent = "Salon privé Meldfall";
-      intro.textContent = "Ton code d'accès :";
-      var code = document.getElementById("code");
-      code.textContent = salon;
-      code.style.display = "block";
-      document.getElementById("note").textContent =
-        "Si l'app est installée, le lien ouvre le salon directement. " +
-        "Sinon, installe Meldfall puis saisis le code dans " +
-        "« En direct > Salon privé > Rejoindre ».";
+      poser("titre", t.okTitre);
+      poser("intro", t.ok);
+      cacher("pitch");
+      poser("note", t.okNote);
     } else if (params.get("graine")) {
-      titre.textContent = "Bats mon fantôme";
-      intro.textContent = (de ? de + " te défie" : "Un ami te défie") +
-        " sur sa donne : mêmes cartes, son fantôme en face.";
+      poser("titre", t.etabliTitre);
+      poser("intro", de ? inserer(t.etabliDe, "de", de) : t.etabli);
     } else if (params.has("jour")) {
-      titre.textContent = "Défi du jour Meldfall";
-      intro.textContent = "Même sabot pour tout le monde — à toi de jouer.";
+      poser("titre", t.jourTitre);
+      poser("intro", t.jour);
     }
     // Force l'ouverture dans l'app sur Android quand la page s'est
     // ouverte dans le navigateur malgré l'app installée.
